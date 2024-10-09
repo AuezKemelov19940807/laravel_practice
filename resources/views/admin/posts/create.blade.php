@@ -16,12 +16,20 @@
     </style>
 </head>
 <body class="font-sans antialiased dark:bg-black dark:text-white/50">
+<h1>Create Post</h1>
+<form action="{{route('admin.posts.store')}}" method="post"  >
+    @csrf
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" name="content" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Post</button>
+</form>
 
-@foreach($posts as $post )
-    <span>{{$post->title}}</span>
-    <span> {{$post->content}} </span>
-@endforeach
 
-Hello Posts
 </body>
 </html>
