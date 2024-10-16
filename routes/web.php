@@ -6,25 +6,40 @@ use App\Http\Controllers\Admin\PostController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\PhotoController;
 
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'redirectAdminIndex'])->middleware('auth');
 
 
-
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-    Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
-    Route::patch('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
-    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+Route::prefix('admin')
+    ->name('admin.posts.')
+    ->group(function () {
+    Route::controller(PostController::class)->group(function () {
+        Route::prefix('posts')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create',  'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{post}/edit', 'edit')->name('edit');
+                Route::patch('/{post}', 'update')->name('update');
+                Route::delete('/{post}', 'destroy')->name('destroy');
+            });
+    });
 });
 
 
 
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login.form');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
+
+
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login.form');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
+});
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
@@ -35,5 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+Route::resource('photos', PhotoController::class);
 
 require __DIR__.'/auth.php';

@@ -29,11 +29,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        // Валидация данных входа
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        $request->session()->regenerate();
+        // Попытка аутентификации
+        if (Auth::attempt($request->only('email', 'password'))) {
+            // Если аутентификация успешна, перенаправляем на страницу
+            return redirect()->intended('dashboard');
+        }
 
-        return redirect()->intended(route('admin.posts.index', absolute: false));
+        // Если аутентификация не удалась
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     /**

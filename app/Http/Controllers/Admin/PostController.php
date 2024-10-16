@@ -8,12 +8,14 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::all();
-        return view('admin.posts.index', ['posts' => $posts]);
+        return Inertia::render('Admin/Posts/Index', [
+            'posts' => Post::all(),
+        ]);
     }
 
     public function show(int $id): View|RedirectResponse
